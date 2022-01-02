@@ -8,4 +8,4 @@ The private key is stored securely on a java keystore, which is accessed through
 
 ## Before you run CalcEncryptor for yourself:
 
--Make sure to populate the package name and the variables for historyFilepath, keystoreFilepath and PASSWORD, found in lines 61, 67 and 68 accordingly.
+-Make sure to populate the package name and the variables for historyFilepath, keystoreFilepath and PASSWORD, found in lines 1, 61, 67 and 68 accordingly.
