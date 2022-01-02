@@ -1,5 +1,8 @@
 package newCalc;
-
+/* Before you run CalcEncryptor for yourself:
+ Make sure to populate the package name and the variables for historyFilepath,
+ keystoreFilepath and PASSWORD, found in lines 1, 64, 70 and 71 accordingly
+*/
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
