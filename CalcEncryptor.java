@@ -245,7 +245,7 @@ public class CalcEncryptor {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 315, 473);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setTitle("mitsos");
+		frame.setTitle("CalcEncryptor");
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
 		frame.getContentPane().setLayout(null);
