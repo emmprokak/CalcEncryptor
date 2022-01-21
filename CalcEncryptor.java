@@ -106,7 +106,7 @@ public class CalcEncryptor {
 		if(!file.exists()) {
 			keystore.load(null,null);
 		}
-		keystore.setKeyEntry("manos",key,password.toCharArray(),null);
+		keystore.setKeyEntry("alias",key,password.toCharArray(),null);
 		OutputStream writeStream = new FileOutputStream(keystorePath);
 		keystore.store(writeStream,password.toCharArray());
 	}
