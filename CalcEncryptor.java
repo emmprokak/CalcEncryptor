@@ -115,7 +115,7 @@ public class CalcEncryptor {
 		KeyStore keystore = KeyStore.getInstance("JCEKS");
 		InputStream readStream = new FileInputStream(keystorePath);
 		keystore.load(readStream,password.toCharArray());
-		SecretKey key = (SecretKey) keystore.getKey("manos", password.toCharArray());
+		SecretKey key = (SecretKey) keystore.getKey("alias", password.toCharArray());
 		return key;
 	}
 	
