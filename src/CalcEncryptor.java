@@ -30,10 +30,10 @@ public class CalcEncryptor {
 
     ArrayList<String> putToHistory = new ArrayList<>();
     String current_calculation = "";
-    private String historyFilepath = "/Users/mns/eclipse-workspace/test/src/test/history.txt";
+    private String historyFilepath = "<user directory>";
     private final int KEY_SIZE = 128;
-    private String keystorePath = "/Users/mns/eclipse-workspace/test/src/test/secret.keystore";
-    private final String PASSWORD = "fsss";
+    private String keystorePath = "<user directory>";
+    private final String PASSWORD = "test";
 
     private EncryptionUtility aes;
 
