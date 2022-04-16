@@ -9,7 +9,3 @@ The private key used for encryption is stored securely on a java keystore, which
 ![calcEncryptor](https://user-images.githubusercontent.com/89413115/163688339-7007424a-f139-4b8a-ab4c-564a89c530ca.png)
 
 ![Screenshot2](https://user-images.githubusercontent.com/89413115/147878251-d5bc25ce-f705-4440-8ffa-5ad275baa184.png)
-
-## Before you run CalcEncryptor for yourself:
-
--Make sure to populate the package name and the variables for historyFilepath, keystoreFilepath and PASSWORD, found in lines 1, 64, 70 and 71 accordingly.
