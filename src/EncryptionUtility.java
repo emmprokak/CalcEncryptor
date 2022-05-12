@@ -1,4 +1,6 @@
-package test;
+/*
+ * @author: Prokakis Emmanouil 2022
+ */
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -46,99 +48,52 @@ public class EncryptionUtility {
 	this.PASSWORD = password;
     }
 
-    boolean initKeystore(String keystorePath, String password) {
-	File keystore = new File(keystorePath);
+    boolean initKeystore(String keystorePath, String password) throws NoSuchAlgorithmException,
+	    UnrecoverableKeyException, KeyStoreException, CertificateException, IOException {
 	Path keystorePathObject = Path.of(keystorePath);
-	System.out.println(keystore.exists());
-	try {
-	    if (Files.exists(keystorePathObject)) {
-		System.out.println("loading from keystore");
-		key = loadFromKeystore(keystorePath, password);
-		System.out.println("key returned is " + key.getEncoded());
-	    } else
-		createKeystore();
-	    return true;
 
-	} catch (Exception e) {
-	    System.out.println(e);
-	    return false;
-	}
+	if (Files.exists(keystorePathObject))
+	    key = loadFromKeystore(keystorePath, password);
+	else
+	    createKeystore();
+
+	return true;
     }
 
-    public void createKeystore() {
+    public void createKeystore() throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException {
 	KeyGenerator generator;
-	try {
-	    generator = KeyGenerator.getInstance("AES");
-	    generator.init(KEY_SIZE);
-	    this.key = generator.generateKey();
-	    storeToKeystore(keystorePath, key, PASSWORD);
-	} catch (NoSuchAlgorithmException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (Exception e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-
+	generator = KeyGenerator.getInstance("AES");
+	generator.init(KEY_SIZE);
+	this.key = generator.generateKey();
+	storeToKeystore(keystorePath, key, PASSWORD);
     }
 
-    public void storeToKeystore(String keystorePath, SecretKey key, String password) {
+    public void storeToKeystore(String keystorePath, SecretKey key, String password)
+	    throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 	File file = new File(keystorePath);
 	KeyStore keystore;
-	try {
-	    keystore = KeyStore.getInstance("JCEKS");
-	    if (!file.exists()) {
-		keystore.load(null, null);
-	    }
-	    keystore.setKeyEntry("alias", key, password.toCharArray(), null);
-	    OutputStream writeStream = new FileOutputStream(keystorePath);
-	    keystore.store(writeStream, password.toCharArray());
-	} catch (KeyStoreException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (NoSuchAlgorithmException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (CertificateException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (IOException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+	keystore = KeyStore.getInstance("JCEKS");
+	if (!file.exists()) {
+	    keystore.load(null, null);
 	}
-
+	keystore.setKeyEntry("alias", key, password.toCharArray(), null);
+	OutputStream writeStream = new FileOutputStream(keystorePath);
+	keystore.store(writeStream, password.toCharArray());
     }
 
-    public SecretKey loadFromKeystore(String keystorePath, String password) {
+    public SecretKey loadFromKeystore(String keystorePath, String password) throws KeyStoreException,
+	    NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException {
 	KeyStore keystore;
-	try {
-	    keystore = KeyStore.getInstance("JCEKS");
-	    InputStream readStream = new FileInputStream(keystorePath);
-	    keystore.load(readStream, password.toCharArray());
-	    SecretKey key = (SecretKey) keystore.getKey("alias", password.toCharArray());
-	    System.out.println("key is " + key);
-	    return key;
-	} catch (KeyStoreException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (NoSuchAlgorithmException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (CertificateException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (IOException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (UnrecoverableKeyException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	return null;
+	keystore = KeyStore.getInstance("JCEKS");
+	InputStream readStream = new FileInputStream(keystorePath);
+	keystore.load(readStream, password.toCharArray());
+	SecretKey key = (SecretKey) keystore.getKey("alias", password.toCharArray());
+	return key;
 
     }
 
-    public byte[] encryptArrayListToBytes(List<String> list) {
+    public byte[] encryptArrayListToBytes(List<String> list) throws NoSuchAlgorithmException, NoSuchPaddingException,
+	    InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 	ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
 	DataOutputStream dataOutput = new DataOutputStream(byteOutput);
 	for (String row : list)
@@ -149,94 +104,57 @@ public class EncryptionUtility {
 	    }
 
 	byte[] ArrayListInBytes = byteOutput.toByteArray();
-	try {
-	    encrCipher = Cipher.getInstance("AES");
-	    encrCipher.init(Cipher.ENCRYPT_MODE, key);
-	    byte[] encryptedBytes = encrCipher.doFinal(ArrayListInBytes);
+	encrCipher = Cipher.getInstance("AES");
+	encrCipher.init(Cipher.ENCRYPT_MODE, key);
+	byte[] encryptedBytes = encrCipher.doFinal(ArrayListInBytes);
 
-	    return encryptedBytes;
-	} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (IllegalBlockSizeException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (BadPaddingException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (InvalidKeyException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	return null;
+	return encryptedBytes;
     }
 
-    public List<String> decryptBytesToArrayList(byte[] encr_history) {
+    public List<String> decryptBytesToArrayList(byte[] encr_history)
+	    throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException,
+	    BadPaddingException, UnsupportedEncodingException {
 
 	List<String> list = new ArrayList<>();
 	Cipher decrCipher;
 	String[] historyArray;
-	try {
-	    decrCipher = Cipher.getInstance("AES");
-	    decrCipher.init(Cipher.DECRYPT_MODE, key);
-	    byte[] decryptedBytes = decrCipher.doFinal(encr_history);
-	    String historyData = new String(decryptedBytes, "utf-8");
-	    historyArray = historyData.split(newline);
-	    for (int i = 0; i < historyArray.length; i++) {
-		if (historyArray[i].contains("="))
-		    list.add(historyArray[i]);
-	    }
-	    return list;
-
-	} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (UnsupportedEncodingException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (IllegalBlockSizeException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (BadPaddingException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (InvalidKeyException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+	decrCipher = Cipher.getInstance("AES");
+	decrCipher.init(Cipher.DECRYPT_MODE, key);
+	byte[] decryptedBytes = decrCipher.doFinal(encr_history);
+	String historyData = new String(decryptedBytes, "utf-8");
+	historyArray = historyData.split(newline);
+	for (int i = 0; i < historyArray.length; i++) {
+	    if (historyArray[i].contains("="))
+		list.add(historyArray[i]);
 	}
-	return null;
+	return list;
     }
 
-    public List<String> loadHistory(String historyFilePath) {
+    public List<String> loadHistory(String historyFilePath) throws IOException, InvalidKeyException,
+	    NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
 	Path file = Paths.get(historyFilePath);
 	List<String> list;
 
-	try {
-	    byte[] encrBytes = Files.readAllBytes(file);
-	    list = decryptBytesToArrayList(encrBytes);
-	    /*
-	     * get rid of random characters at start of history entries, this can definitely
-	     * be done in a better way
-	     */
-	    char[] temp;
-	    for (int i = 0; i < list.size(); i++) {
-		temp = list.get(i).toCharArray();
-		for (int j = 0; j < temp.length; j++) {
-		    if (j <= 1)
-			temp[j] = ' ';
-		}
-		list.set(i, String.copyValueOf(temp));
+	byte[] encrBytes = Files.readAllBytes(file);
+	list = decryptBytesToArrayList(encrBytes);
+	/*
+	 * get rid of random characters at start of history entries, this can definitely
+	 * be done in a better way
+	 */
+	char[] temp;
+	for (int i = 0; i < list.size(); i++) {
+	    temp = list.get(i).toCharArray();
+	    for (int j = 0; j < temp.length; j++) {
+		if (j <= 1)
+		    temp[j] = ' ';
 	    }
-	    return list;
-
-	} catch (Exception e) {
-	    e.printStackTrace();
+	    list.set(i, String.copyValueOf(temp));
 	}
-
-	return null;
+	return list;
     }
 
-    public void writeHistory(List<String> list, String historyFilePath) {
+    public void writeHistory(List<String> list, String historyFilePath) throws InvalidKeyException,
+	    NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
 	try {
 	    FileOutputStream file_output = new FileOutputStream(historyFilePath);
 	    file_output.write(encryptArrayListToBytes(list));
