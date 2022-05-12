@@ -1,4 +1,6 @@
-package test;
+  /*
+   * @author Prokakis Emmanouil 2022
+   */
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -11,9 +13,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -63,7 +73,12 @@ public class CalcEncryptor extends JFrame {
 	}
 	Path keystorePathObject = Path.of(keystorePath);
 	if (Files.exists(keystorePathObject))
-	    aes.initKeystore(keystorePath, PASSWORD);
+	    try {
+		aes.initKeystore(keystorePath, PASSWORD);
+	    } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException | CertificateException
+		    | IOException e) {
+		e.printStackTrace();
+	    }
 	initializeGUI();
     }
 
@@ -248,7 +263,12 @@ public class CalcEncryptor extends JFrame {
 		     */
 		    List<String> history = new ArrayList<>();
 		    if (new File(historyFilepath).exists() && !isFileEmpty(historyFilepath))
-			history = aes.loadHistory(historyFilepath);
+			try {
+			    history = aes.loadHistory(historyFilepath);
+			} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
+				| IllegalBlockSizeException | BadPaddingException | IOException e1) {
+			    e1.printStackTrace();
+			}
 		    for (int i = 0; i < history.size(); i++) {
 			history.set(i, history.get(i) + newline);
 			historyfield.append(history.get(i).trim() + newline);
