@@ -1,11 +1,18 @@
-package test;
+/*
+ * @author: Prokakis Emmanouil 2022
+ */
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -102,7 +109,12 @@ public class FirstRunUtility extends JDialog {
     public void createNeededFiles(String historyPath, String keystorePath) {
 	((CalcEncryptor) this.mainWindow).getFrame().setVisible(true);
 	if (!encrypt.getKeystoreReady())
-	    this.encrypt.initKeystore(historyPath, keystorePath);
+	    try {
+		this.encrypt.initKeystore(historyPath, keystorePath);
+	    } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException | CertificateException
+		    | IOException e) {
+		e.printStackTrace();
+	    }
 	this.setVisible(false);
     }
 
